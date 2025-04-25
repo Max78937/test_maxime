@@ -42,7 +42,7 @@ resource "docker_image" "mysql" {
   name = "mysql:9.2"
 }
 
-# Conteneur MySQL
+# Conteneur MySQL avec HEALTHCHECK
 resource "docker_container" "mysql" {
   name  = var.mysql_host
   image = docker_image.mysql.image_id
@@ -59,6 +59,10 @@ resource "docker_container" "mysql" {
   volumes {
     host_path      = "${abspath(path.module)}/sqlfiles"
     container_path = "/docker-entrypoint-initdb.d"
+  }
+
+  healthcheck {
+    test     = ["CMD", "mysqladmin", "ping", "-h", "localhost"]
   }
 
   networks_advanced {
